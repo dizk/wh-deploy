@@ -14,11 +14,12 @@ var executable = pulldir + '/' + mainfilename
 
 // Forever childs
 var pull = new (forever.Monitor)([ 'git', 'pull' ], {
-    max : 1,
-    cwd: pulldir
+	max: 1,
+	cwd: pulldir
 });
 
 var child = new (forever.Monitor)(executable, {
+	max: 10,
 	silent: true,
 	cwd: pulldir
 });
