@@ -5,7 +5,7 @@ var forever = require('forever-monitor');
 
 // CONFIG
 var port = 9321;
-var pulldir = '/Users/diz/repos/phoroneus'; // no ending slash
+var pulldir = '/home/diz/phoroneus'; // no ending slash
 var mainfilename = 'index.js'; // name of file to be run
 
 
@@ -18,6 +18,11 @@ var pull = new (forever.Monitor)([ 'git', 'pull' ], {
 	cwd: pulldir
 });
 
+var npm = new (forever.Monitor)([ 'npm', 'install' ], {
+  max: 1,
+  cwd: pulldir
+});
+
 var child = new (forever.Monitor)(executable, {
 	max: 10,
 	silent: true,
@@ -25,8 +30,13 @@ var child = new (forever.Monitor)(executable, {
 });
 
 pull.on('exit', function() {
+    npm.start();
+});
+
+npm.on('exit', function() {
     child.restart();
 });
+
 
 child.on('restart', function() {
     console.error('Forever restarting app for ' + child.times + ' time');
